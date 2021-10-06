@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font compare</title>
+</head>
+
+<body>
+    <div>
+        <input type="text" placeholder="A א a" oninput="changeText(this.value)">
+    </div>
+    <div class="fontGrid">
+        <div style="font-family: Arial, sans-serif;">
+            <h2>Arial</h2>
+            <span>A א a</span>
+        </div>
+        <div style="font-family: Arial2">
+            <h2>System Sans</h2>
+            <span>A א a</span>
+        </div>
+        <div style="font-family: Liberation Sans;">
+            <h2>Liberation Sans</h2>
+            <span>A א a</span>
+        </div>
+    </div>
+    <div class="bar" style="top:9em"></div>
+    <div class="bar" style="background-color: royalblue; top: 273px"></div>
+    <div style="text-align: center;">
+        <h2><span style="color: red;">top</span> - <span style="color: royalblue;">bottom</span> = <span
+                id="calcDis"></span></h2>
+        <textarea placeholder="Notes" cols="30" rows="10"></textarea>
+    </div>
+</body>
+
+<style>
+    html {
+        background-color: #d2d2d2;
+    }
+
+    .fontGrid {
+        display: grid;
+        grid-template: 1fr / 1fr 1fr 1fr;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .fontGrid>div {
+        background-color: #f1f1f1;
+        padding: 1em;
+    }
+
+    .fontGrid span {
+        font-size: 130pt;
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+        width: 100%;
+        display: block;
+        user-select: none;
+    }
+
+    .bar {
+        width: 100vw;
+        height: 1px;
+        background-color: red;
+        position: absolute;
+        cursor: grab;
+        /* border-bottom: 8px solid red;
+        margin-top: -8px; */
+    }
+
+    input[type="text"] {
+        margin: 0 auto;
+        display: block;
+    }
+
+    @font-face {
+        font-family: Liberation Sans;
+        src: url('LiberationSans-Regular.ttf') format('truetype');
+    }
+
+    @font-face {
+        font-family: Arial2;
+        src: url('Arial.ttf') format('truetype');
+    }
+</style>
+<script>
+    function changeText(v) {
+        console.log(v);
+        if (v === "") {
+            v = "A א a"
+        }
+        let arr = document.querySelectorAll(".fontGrid span");
+        for (elm of arr) {
+            elm.innerText = v;
+        }
+    }
+
+    function calcDis() {
+        let dis = document.querySelectorAll(".bar")[1].getBoundingClientRect().y -
+            document.querySelectorAll(".bar")[0].getBoundingClientRect().y;
+        document.getElementById("calcDis").innerText = dis;
+    }
+</script>
+
+<script>
+    dragElement(document.querySelectorAll(".bar")[0]);
+    dragElement(document.querySelectorAll(".bar")[1]);
+
+    function dragElement(elmnt) {
+        var pos1 = 0,
+            pos2 = 0,
+            pos3 = 0,
+            pos4 = 0;
+
+        elmnt.onmousedown = dragMouseDown;
+
+        function dragMouseDown(e) {
+            e = e || window.event;
+            e.preventDefault();
+            // get the mouse cursor position at startup:
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            // call a function whenever the cursor moves:
+            document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+            // calculate the new cursor position:
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            // set the element's new position:
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+            // elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            calcDis()
+        }
+
+        function closeDragElement() {
+            // stop moving when mouse button is released:
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
+    }
+</script>
+
+</html>
